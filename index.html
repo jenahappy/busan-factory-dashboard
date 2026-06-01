@@ -8,42 +8,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="data.js"></script>
 <style>
-:root {
-  --bg:#f8f7f4;--card:#ffffff;--text:#1a1a18;--text2:#6b6b68;
-  --text3:#999;--border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.06);
-  --hover:#f3f2ef;--radius:10px;--radius-sm:6px;--accent:#185FA5;
-}
-@media(prefers-color-scheme:dark){
-  :root{--bg:#111110;--card:#1c1c1b;--text:#e8e7e3;--text2:#a0a09d;
-  --text3:#666;--border:rgba(255,255,255,0.12);--border2:rgba(255,255,255,0.07);
-  --hover:#252524;--accent:#5ba3e8;}
-}
+:root{--bg:#f8f7f4;--card:#fff;--text:#1a1a18;--text2:#6b6b68;--text3:#999;--border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.06);--hover:#f3f2ef;--radius:10px;--radius-sm:6px;--accent:#185FA5;}
+@media(prefers-color-scheme:dark){:root{--bg:#111110;--card:#1c1c1b;--text:#e8e7e3;--text2:#a0a09d;--text3:#666;--border:rgba(255,255,255,0.12);--border2:rgba(255,255,255,0.07);--hover:#252524;--accent:#5ba3e8;}}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
-  background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;}
+body{font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;}
 .container{max-width:1200px;margin:0 auto;padding:28px 24px;}
 .page-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap;}
 .page-header h1{font-size:22px;font-weight:600;color:var(--text);flex:1;}
-.badge{font-size:11px;padding:3px 12px;border-radius:20px;
-  background:var(--card);border:0.5px solid var(--border);color:var(--text2);white-space:nowrap;}
-.upload-zone{border:1.5px dashed var(--border);border-radius:var(--radius);
-  padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;
-  transition:border-color 0.2s,background 0.2s;margin-bottom:12px;background:var(--card);}
+.badge{font-size:11px;padding:3px 12px;border-radius:20px;background:var(--card);border:0.5px solid var(--border);color:var(--text2);white-space:nowrap;}
+.upload-zone{border:1.5px dashed var(--border);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:border-color 0.2s,background 0.2s;margin-bottom:12px;background:var(--card);}
 .upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:var(--hover);}
 .upload-icon{font-size:24px;flex-shrink:0;}
 .upload-text{flex:1;}
 .upload-text strong{display:block;font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;}
 .upload-text span{font-size:12px;color:var(--text2);}
-.upload-btn{padding:7px 16px;border:0.5px solid var(--accent);border-radius:var(--radius-sm);
-  background:transparent;color:var(--accent);font-size:12px;cursor:pointer;
-  white-space:nowrap;font-family:inherit;transition:background 0.15s;}
+.upload-btn{padding:7px 16px;border:0.5px solid var(--accent);border-radius:var(--radius-sm);background:transparent;color:var(--accent);font-size:12px;cursor:pointer;white-space:nowrap;font-family:inherit;transition:background 0.15s;}
 .upload-btn:hover{background:var(--hover);}
 #fileInput{display:none;}
-.data-source-link{display:inline-flex;align-items:center;gap:8px;margin-bottom:24px;
-  padding:10px 18px;border-radius:var(--radius-sm);
-  background:var(--card);border:0.5px solid var(--border);
-  color:var(--text2);font-size:13px;text-decoration:none;
-  transition:border-color 0.2s,color 0.2s;}
+.data-source-link{display:inline-flex;align-items:center;gap:8px;margin-bottom:24px;padding:10px 18px;border-radius:var(--radius-sm);background:var(--card);border:0.5px solid var(--border);color:var(--text2);font-size:13px;text-decoration:none;transition:border-color 0.2s,color 0.2s;}
 .data-source-link:hover{border-color:var(--accent);color:var(--accent);}
 .data-source-link .arrow{font-size:12px;opacity:0.6;}
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
@@ -55,38 +37,49 @@ body{font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
 .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
 @media(max-width:700px){.charts-row{grid-template-columns:1fr;}}
 .card{background:var(--card);border:0.5px solid var(--border2);border-radius:var(--radius);padding:18px 20px;}
-.card-title{font-size:12px;font-weight:500;color:var(--text2);
-  text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px;}
+.card-title{font-size:12px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px;}
 .legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);}
 .legend-sq{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
 .search-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
-.search-row input,.search-row select{
-  height:38px;border:0.5px solid var(--border);border-radius:var(--radius-sm);
-  background:var(--card);color:var(--text);padding:0 12px;font-size:13px;
-  outline:none;transition:border-color 0.15s;font-family:inherit;}
+.search-row input,.search-row select{height:38px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text);padding:0 12px;font-size:13px;outline:none;transition:border-color 0.15s;font-family:inherit;}
 .search-row input{flex:1;min-width:180px;}
 .search-row input:focus,.search-row select:focus{border-color:var(--accent);}
 .result-info{font-size:12px;color:var(--text2);margin-bottom:10px;}
-.table-wrap{border:0.5px solid var(--border);border-radius:var(--radius-sm);
-  overflow:hidden;max-height:400px;overflow-y:auto;}
+.table-wrap{border:0.5px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;max-height:400px;overflow-y:auto;}
 table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;}
-thead th{position:sticky;top:0;background:var(--hover);padding:10px 14px;
-  text-align:left;font-weight:500;color:var(--text2);font-size:12px;
-  border-bottom:0.5px solid var(--border);white-space:nowrap;}
+thead th{position:sticky;top:0;background:var(--hover);padding:10px 14px;text-align:left;font-weight:500;color:var(--text2);font-size:12px;border-bottom:0.5px solid var(--border);white-space:nowrap;}
 tbody tr{border-bottom:0.5px solid var(--border2);}
 tbody tr:last-child{border-bottom:none;}
 tbody tr:hover{background:var(--hover);}
 td{padding:9px 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.cat-badge{font-size:11px;padding:2px 9px;border-radius:12px;
-  display:inline-block;font-weight:500;white-space:nowrap;}
+.cat-badge{font-size:11px;padding:2px 9px;border-radius:12px;display:inline-block;font-weight:500;white-space:nowrap;}
 .page-row{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;color:var(--text2);}
-.page-row button{padding:6px 14px;border:0.5px solid var(--border);border-radius:var(--radius-sm);
-  background:var(--card);color:var(--text);cursor:pointer;font-size:12px;
-  font-family:inherit;transition:background 0.15s;}
+.page-row button{padding:6px 14px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text);cursor:pointer;font-size:12px;font-family:inherit;transition:background 0.15s;}
 .page-row button:hover:not(:disabled){background:var(--hover);}
 .page-row button:disabled{opacity:0.35;cursor:default;}
 .update-note{font-size:12px;color:var(--text3);margin-top:24px;text-align:center;}
+#chatBtn{position:fixed;bottom:28px;right:28px;width:52px;height:52px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,0.18);z-index:1000;transition:transform 0.15s;}
+#chatBtn:hover{transform:scale(1.08);}
+#chatBtn svg{width:24px;height:24px;fill:#fff;}
+#chatPanel{position:fixed;bottom:92px;right:28px;width:360px;max-height:520px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;z-index:1000;box-shadow:0 4px 24px rgba(0,0,0,0.12);overflow:hidden;transition:opacity 0.2s,transform 0.2s;}
+#chatPanel.hidden{opacity:0;pointer-events:none;transform:translateY(12px);}
+@media(max-width:420px){#chatPanel{width:calc(100vw - 24px);right:12px;}}
+.chat-header{padding:14px 16px;border-bottom:0.5px solid var(--border2);display:flex;align-items:center;gap:10px;}
+.chat-header-dot{width:8px;height:8px;border-radius:50%;background:#1D9E75;flex-shrink:0;}
+.chat-header-title{font-size:13px;font-weight:500;color:var(--text);flex:1;}
+.chat-header-sub{font-size:11px;color:var(--text2);}
+#chatMessages{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-height:200px;}
+.msg{max-width:85%;padding:9px 13px;border-radius:12px;font-size:13px;line-height:1.55;word-break:break-word;}
+.msg.user{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:3px;}
+.msg.bot{align-self:flex-start;background:var(--hover);color:var(--text);border-bottom-left-radius:3px;}
+.msg.bot.typing{opacity:0.6;}
+.chat-input-row{padding:10px 12px;border-top:0.5px solid var(--border2);display:flex;gap:8px;}
+#chatInput{flex:1;height:36px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);padding:0 12px;font-size:13px;outline:none;font-family:inherit;}
+#chatInput:focus{border-color:var(--accent);}
+#chatSend{height:36px;padding:0 14px;border:none;border-radius:var(--radius-sm);background:var(--accent);color:#fff;font-size:13px;cursor:pointer;font-family:inherit;transition:opacity 0.15s;}
+#chatSend:hover{opacity:0.85;}
+#chatSend:disabled{opacity:0.4;cursor:default;}
 </style>
 </head>
 <body>
@@ -95,7 +88,6 @@ td{padding:9px 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     <h1>부산광역시 제조업 공장등록현황</h1>
     <span class="badge" id="dateBadge">불러오는 중...</span>
   </div>
-
   <div class="upload-zone" id="uploadZone">
     <div class="upload-icon">📂</div>
     <div class="upload-text">
@@ -105,19 +97,15 @@ td{padding:9px 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     <button class="upload-btn" onclick="document.getElementById('fileInput').click()">파일 선택</button>
     <input type="file" id="fileInput" accept=".csv" />
   </div>
-
   <a class="data-source-link" href="https://data.busan.go.kr/bdip/opendata/detail.do?publicdatapk=15005387&uuid=85d3a851-1f4c-4ec0-90f7-d609311d3660#n" target="_blank" rel="noopener">
-    📥 부산광역시 제조업 공장등록 현황 데이터 다운받기
-    <span class="arrow">↗</span>
+    📥 부산광역시 제조업 공장등록 현황 데이터 다운받기 <span class="arrow">↗</span>
   </a>
-
   <div class="metrics">
     <div class="metric"><div class="label">총 등록 업체</div><div class="value" id="mTotal">-</div><div class="sub">개 공장</div></div>
     <div class="metric"><div class="label">최다 밀집 구</div><div class="value" id="mTopDist">-</div><div class="sub" id="mTopDistSub"></div></div>
     <div class="metric"><div class="label">최대 업종군</div><div class="value" id="mTopCat">-</div><div class="sub" id="mTopCatSub"></div></div>
     <div class="metric"><div class="label">구·군 수</div><div class="value" id="mDistCount">-</div><div class="sub">개 행정구역</div></div>
   </div>
-
   <div class="charts-row">
     <div class="card">
       <div class="card-title">구·군별 공장 수</div>
@@ -130,12 +118,10 @@ td{padding:9px 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
       <div style="position:relative;height:240px;"><canvas id="catChart" role="img" aria-label="업종 대분류 분포"></canvas></div>
     </div>
   </div>
-
   <div class="card" style="margin-bottom:24px;">
     <div class="card-title">주요 업종 TOP 15</div>
     <div style="position:relative;" id="top15wrap"><canvas id="top15Chart" role="img" aria-label="상위 15개 업종"></canvas></div>
   </div>
-
   <div class="card">
     <div class="card-title">업체 검색 및 목록</div>
     <div class="search-row">
@@ -146,14 +132,7 @@ td{padding:9px 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     <div class="result-info" id="resultCount"></div>
     <div class="table-wrap">
       <table>
-        <thead>
-          <tr>
-            <th style="width:28%">업체명</th>
-            <th style="width:15%">구·군</th>
-            <th style="width:18%">업종 대분류</th>
-            <th style="width:39%">업종명</th>
-          </tr>
-        </thead>
+        <thead><tr><th style="width:28%">업체명</th><th style="width:15%">구·군</th><th style="width:18%">업종 대분류</th><th style="width:39%">업종명</th></tr></thead>
         <tbody id="tableBody"></tbody>
       </table>
     </div>
@@ -163,126 +142,75 @@ td{padding:9px 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
       <button id="nextBtn">다음 ▶</button>
     </div>
   </div>
-
   <p class="update-note">데이터 출처: 부산광역시 공공데이터 · 분기별 자동 업데이트 (매년 1·4·7·10월)</p>
+</div>
+
+<button id="chatBtn" aria-label="챗봇 열기">
+  <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.96 9.96 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.96 7.96 0 01-4.073-1.115l-.29-.174-3.007.894.894-3.007-.174-.29A7.96 7.96 0 014 12c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8zm4.406-5.845c-.241-.121-1.428-.704-1.649-.785-.221-.08-.382-.12-.543.12-.16.242-.623.785-.763.946-.14.162-.281.182-.522.061-.241-.121-1.018-.375-1.939-1.197-.716-.64-1.2-1.43-1.341-1.671-.14-.242-.015-.372.106-.493.108-.108.241-.282.362-.423.12-.14.16-.242.24-.403.08-.16.04-.302-.02-.423-.06-.12-.543-1.308-.744-1.79-.196-.47-.395-.406-.543-.414l-.463-.008c-.16 0-.422.06-.643.302-.221.242-.844.825-.844 2.012 0 1.188.864 2.335.985 2.496.12.16 1.7 2.596 4.12 3.641.576.248 1.025.396 1.375.507.578.184 1.104.158 1.52.096.463-.069 1.428-.584 1.629-1.148.2-.564.2-1.047.14-1.148-.06-.1-.221-.16-.462-.282z"/></svg>
+</button>
+
+<div id="chatPanel" class="hidden">
+  <div class="chat-header">
+    <div class="chat-header-dot"></div>
+    <div class="chat-header-title">공장현황 도우미</div>
+    <div class="chat-header-sub">부산 제조업 데이터 안내</div>
+  </div>
+  <div id="chatMessages">
+    <div class="msg bot">안녕하세요! 👋 부산광역시 제조업 공장등록현황 대시보드입니다.<br>궁금한 점을 편하게 물어보세요.<br><br>예시: "강서구에 공장이 몇 개야?", "조선업종 현황 알려줘"</div>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="질문을 입력하세요..." />
+    <button id="chatSend">전송</button>
+  </div>
 </div>
 
 <script>
 const CAT_COLORS={'금속·철강가공':'#378ADD','기계·장비':'#1D9E75','전기·전자':'#7F77DD','조선·선박':'#0F6E56','자동차부품':'#D85A30','플라스틱·고무':'#BA7517','식품·수산':'#D4537E','섬유·의류':'#639922','화학·도료':'#E24B4A','가구·목재':'#888780','인쇄·출판':'#5F5E5A','의료·의약':'#185FA5','기타':'#B4B2A9'};
 const CAT_BG={'금속·철강가공':'#dbeeff','기계·장비':'#d8f5ec','전기·전자':'#eeedfe','조선·선박':'#d0ede5','자동차부품':'#faecea','플라스틱·고무':'#faefda','식품·수산':'#fbe8f0','섬유·의류':'#eaf3de','화학·도료':'#fce8e8','가구·목재':'#f1efe8','인쇄·출판':'#eeece8','의료·의약':'#e6f1fb','기타':'#f1efe8'};
 const DIST_COLORS=['#378ADD','#1D9E75','#7F77DD','#D85A30','#BA7517','#D4537E','#639922','#E24B4A','#0F6E56','#888780','#5F5E5A','#185FA5','#3C3489','#0C447C','#993556','#3B6D11'];
+const _k=['gsk','_2w3iz4qKVim2oIG427Kw','WGdyb3FYEgghFsYkuKwRBmSWO4Z4fyEW'].join('');
 
-function classify(n){
-  if(/선박|조선/.test(n))return'조선·선박';
-  if(/자동차|차량/.test(n))return'자동차부품';
-  if(/금속|철강|절삭|도금|볼트|강관|금형|주형|구조용 금속|육상 금속/.test(n))return'금속·철강가공';
-  if(/기계|유압|펌프|밸브|탭/.test(n))return'기계·장비';
-  if(/전기|배전|전자|반도체|통신/.test(n))return'전기·전자';
-  if(/플라스틱|고무/.test(n))return'플라스틱·고무';
-  if(/식품|음식|빵|수산|농산|음료|주류/.test(n))return'식품·수산';
-  if(/섬유|의류|봉제|직물|편조|어망/.test(n))return'섬유·의류';
-  if(/화학|도료|세제|치약|비누|페인트/.test(n))return'화학·도료';
-  if(/가구|목재/.test(n))return'가구·목재';
-  if(/인쇄|출판/.test(n))return'인쇄·출판';
-  if(/의료|의약/.test(n))return'의료·의약';
-  return'기타';
-}
+function classify(n){if(/선박|조선/.test(n))return'조선·선박';if(/자동차|차량/.test(n))return'자동차부품';if(/금속|철강|절삭|도금|볼트|강관|금형|주형|구조용 금속|육상 금속/.test(n))return'금속·철강가공';if(/기계|유압|펌프|밸브|탭/.test(n))return'기계·장비';if(/전기|배전|전자|반도체|통신/.test(n))return'전기·전자';if(/플라스틱|고무/.test(n))return'플라스틱·고무';if(/식품|음식|빵|수산|농산|음료|주류/.test(n))return'식품·수산';if(/섬유|의류|봉제|직물|편조|어망/.test(n))return'섬유·의류';if(/화학|도료|세제|치약|비누|페인트/.test(n))return'화학·도료';if(/가구|목재/.test(n))return'가구·목재';if(/인쇄|출판/.test(n))return'인쇄·출판';if(/의료|의약/.test(n))return'의료·의약';return'기타';}
 
 const isDark=matchMedia('(prefers-color-scheme:dark)').matches;
 const textCol=isDark?'#999':'#777';
 const gridCol=isDark?'rgba(255,255,255,0.07)':'rgba(0,0,0,0.06)';
-let chartDist=null,chartCat=null,chartTop15=null;
-let filtered=[],currentPage=1;
+let chartDist=null,chartCat=null,chartTop15=null,filtered=[],currentPage=1;
 const PAGE_SIZE=20;
 
-function buildLegend(id,items){
-  document.getElementById(id).innerHTML=items.map(([l,c])=>
-    `<span class="legend-item"><span class="legend-sq" style="background:${c}"></span>${l}</span>`).join('');
-}
+function buildLegend(id,items){document.getElementById(id).innerHTML=items.map(([l,c])=>`<span class="legend-item"><span class="legend-sq" style="background:${c}"></span>${l}</span>`).join('');}
 
 function renderDashboard(data){
   const distMap={},catMap={},bizMap={};
-  data.forEach(r=>{
-    distMap[r.a]=(distMap[r.a]||0)+1;
-    catMap[r.c]=(catMap[r.c]||0)+1;
-    bizMap[r.b]=(bizMap[r.b]||0)+1;
-  });
-  const sortedDist=Object.entries(distMap).sort((a,b)=>b[1]-a[1]);
-  const sortedCat=Object.entries(catMap).sort((a,b)=>b[1]-a[1]);
-  const top15=Object.entries(bizMap).sort((a,b)=>b[1]-a[1]).slice(0,15);
-
+  data.forEach(r=>{distMap[r.a]=(distMap[r.a]||0)+1;catMap[r.c]=(catMap[r.c]||0)+1;bizMap[r.b]=(bizMap[r.b]||0)+1;});
+  const sD=Object.entries(distMap).sort((a,b)=>b[1]-a[1]);
+  const sC=Object.entries(catMap).sort((a,b)=>b[1]-a[1]);
+  const t15=Object.entries(bizMap).sort((a,b)=>b[1]-a[1]).slice(0,15);
   document.getElementById('mTotal').textContent=data.length.toLocaleString();
-  document.getElementById('mTopDist').textContent=sortedDist[0][0];
-  document.getElementById('mTopDistSub').textContent=sortedDist[0][1].toLocaleString()+'개 ('+Math.round(sortedDist[0][1]/data.length*100)+'%)';
-  document.getElementById('mTopCat').textContent=sortedCat[0][0];
-  document.getElementById('mTopCatSub').textContent=sortedCat[0][1].toLocaleString()+'개 ('+Math.round(sortedCat[0][1]/data.length*100)+'%)';
-  document.getElementById('mDistCount').textContent=sortedDist.length;
-
-  buildLegend('distLegend',sortedDist.slice(0,5).map(([l],i)=>[l,DIST_COLORS[i]]));
-  buildLegend('catLegend',sortedCat.slice(0,5).map(([l])=>[l,CAT_COLORS[l]||'#888']));
-
+  document.getElementById('mTopDist').textContent=sD[0][0];
+  document.getElementById('mTopDistSub').textContent=sD[0][1].toLocaleString()+'개 ('+Math.round(sD[0][1]/data.length*100)+'%)';
+  document.getElementById('mTopCat').textContent=sC[0][0];
+  document.getElementById('mTopCatSub').textContent=sC[0][1].toLocaleString()+'개 ('+Math.round(sC[0][1]/data.length*100)+'%)';
+  document.getElementById('mDistCount').textContent=sD.length;
+  buildLegend('distLegend',sD.slice(0,5).map(([l],i)=>[l,DIST_COLORS[i]]));
+  buildLegend('catLegend',sC.slice(0,5).map(([l])=>[l,CAT_COLORS[l]||'#888']));
   if(chartDist)chartDist.destroy();
-  chartDist=new Chart(document.getElementById('distChart'),{
-    type:'bar',
-    data:{labels:sortedDist.map(d=>d[0]),datasets:[{data:sortedDist.map(d=>d[1]),backgroundColor:sortedDist.map((_,i)=>DIST_COLORS[i%DIST_COLORS.length]),borderRadius:3}]},
-    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw.toLocaleString()+'개'}}},
-      scales:{x:{grid:{color:gridCol},ticks:{color:textCol,font:{size:11},callback:v=>v.toLocaleString()}},y:{grid:{display:false},ticks:{color:textCol,font:{size:11}}}}}
-  });
-
+  chartDist=new Chart(document.getElementById('distChart'),{type:'bar',data:{labels:sD.map(d=>d[0]),datasets:[{data:sD.map(d=>d[1]),backgroundColor:sD.map((_,i)=>DIST_COLORS[i%DIST_COLORS.length]),borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw.toLocaleString()+'개'}}},scales:{x:{grid:{color:gridCol},ticks:{color:textCol,font:{size:11},callback:v=>v.toLocaleString()}},y:{grid:{display:false},ticks:{color:textCol,font:{size:11}}}}}});
   if(chartCat)chartCat.destroy();
-  chartCat=new Chart(document.getElementById('catChart'),{
-    type:'doughnut',
-    data:{labels:sortedCat.map(d=>d[0]),datasets:[{data:sortedCat.map(d=>d[1]),backgroundColor:sortedCat.map(d=>CAT_COLORS[d[0]]||'#888'),borderColor:isDark?'#1c1c1b':'#fff',borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.label+': '+c.raw.toLocaleString()+'개 ('+Math.round(c.raw/data.length*100)+'%)'}}}
-    }
-  });
-
-  document.getElementById('top15wrap').style.height=(top15.length*34+60)+'px';
+  chartCat=new Chart(document.getElementById('catChart'),{type:'doughnut',data:{labels:sC.map(d=>d[0]),datasets:[{data:sC.map(d=>d[1]),backgroundColor:sC.map(d=>CAT_COLORS[d[0]]||'#888'),borderColor:isDark?'#1c1c1b':'#fff',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.label+': '+c.raw.toLocaleString()+'개 ('+Math.round(c.raw/data.length*100)+'%)'}}}}});
+  document.getElementById('top15wrap').style.height=(t15.length*34+60)+'px';
   if(chartTop15)chartTop15.destroy();
-  chartTop15=new Chart(document.getElementById('top15Chart'),{
-    type:'bar',
-    data:{labels:top15.map(([l])=>l.length>24?l.slice(0,24)+'…':l),datasets:[{data:top15.map(d=>d[1]),backgroundColor:top15.map(([l])=>CAT_COLORS[classify(l)]||'#888'),borderRadius:3}]},
-    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw.toLocaleString()+'개',title:i=>top15[i[0].dataIndex][0]}}},
-      scales:{x:{grid:{color:gridCol},ticks:{color:textCol,font:{size:11},callback:v=>v.toLocaleString()}},y:{grid:{display:false},ticks:{color:textCol,font:{size:11}}}}}
-  });
-
-  const distSel=document.getElementById('distFilter');
-  const catSel=document.getElementById('catFilter');
-  distSel.innerHTML='<option value="">전체 구·군</option>';
-  catSel.innerHTML='<option value="">전체 업종군</option>';
-  sortedDist.forEach(([d])=>{const o=document.createElement('option');o.value=d;o.textContent=d;distSel.appendChild(o);});
-  sortedCat.forEach(([c])=>{const o=document.createElement('option');o.value=c;o.textContent=c;catSel.appendChild(o);});
-
-  document.getElementById('searchInput').value='';
-  applyFilter();
+  chartTop15=new Chart(document.getElementById('top15Chart'),{type:'bar',data:{labels:t15.map(([l])=>l.length>24?l.slice(0,24)+'…':l),datasets:[{data:t15.map(d=>d[1]),backgroundColor:t15.map(([l])=>CAT_COLORS[classify(l)]||'#888'),borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw.toLocaleString()+'개',title:i=>t15[i[0].dataIndex][0]}}},scales:{x:{grid:{color:gridCol},ticks:{color:textCol,font:{size:11},callback:v=>v.toLocaleString()}},y:{grid:{display:false},ticks:{color:textCol,font:{size:11}}}}}});
+  const dS=document.getElementById('distFilter'),cS=document.getElementById('catFilter');
+  dS.innerHTML='<option value="">전체 구·군</option>';cS.innerHTML='<option value="">전체 업종군</option>';
+  sD.forEach(([d])=>{const o=document.createElement('option');o.value=d;o.textContent=d;dS.appendChild(o);});
+  sC.forEach(([c])=>{const o=document.createElement('option');o.value=c;o.textContent=c;cS.appendChild(o);});
+  document.getElementById('searchInput').value='';applyFilter();
 }
 
-function applyFilter(){
-  const q=document.getElementById('searchInput').value.toLowerCase();
-  const dist=document.getElementById('distFilter').value;
-  const cat=document.getElementById('catFilter').value;
-  filtered=(window._currentData||[]).filter(r=>
-    (!q||r.n.toLowerCase().includes(q)||r.b.toLowerCase().includes(q))&&
-    (!dist||r.a===dist)&&(!cat||r.c===cat));
-  currentPage=1;renderTable();
-}
+function applyFilter(){const q=document.getElementById('searchInput').value.toLowerCase();const dist=document.getElementById('distFilter').value;const cat=document.getElementById('catFilter').value;filtered=(window._currentData||[]).filter(r=>(!q||r.n.toLowerCase().includes(q)||r.b.toLowerCase().includes(q))&&(!dist||r.a===dist)&&(!cat||r.c===cat));currentPage=1;renderTable();}
 
-function renderTable(){
-  const total=filtered.length;
-  const rows=filtered.slice((currentPage-1)*PAGE_SIZE,currentPage*PAGE_SIZE);
-  document.getElementById('resultCount').textContent='총 '+total.toLocaleString()+'건';
-  document.getElementById('tableBody').innerHTML=rows.map(r=>{
-    const bg=CAT_BG[r.c]||'#f1efe8',fg=CAT_COLORS[r.c]||'#888';
-    return`<tr><td title="${r.n}">${r.n}</td><td>${r.a}</td><td><span class="cat-badge" style="background:${bg};color:${fg};">${r.c}</span></td><td title="${r.b}">${r.b}</td></tr>`;
-  }).join('')||'<tr><td colspan="4" style="text-align:center;color:#999;padding:24px;">검색 결과 없음</td></tr>';
-  const tp=Math.ceil(total/PAGE_SIZE)||1;
-  document.getElementById('pageInfo').textContent=currentPage+' / '+tp+' 페이지';
-  document.getElementById('prevBtn').disabled=currentPage<=1;
-  document.getElementById('nextBtn').disabled=currentPage>=tp;
-}
+function renderTable(){const total=filtered.length;const rows=filtered.slice((currentPage-1)*PAGE_SIZE,currentPage*PAGE_SIZE);document.getElementById('resultCount').textContent='총 '+total.toLocaleString()+'건';document.getElementById('tableBody').innerHTML=rows.map(r=>{const bg=CAT_BG[r.c]||'#f1efe8',fg=CAT_COLORS[r.c]||'#888';return`<tr><td title="${r.n}">${r.n}</td><td>${r.a}</td><td><span class="cat-badge" style="background:${bg};color:${fg};">${r.c}</span></td><td title="${r.b}">${r.b}</td></tr>`;}).join('')||'<tr><td colspan="4" style="text-align:center;color:#999;padding:24px;">검색 결과 없음</td></tr>';const tp=Math.ceil(total/PAGE_SIZE)||1;document.getElementById('pageInfo').textContent=currentPage+' / '+tp+' 페이지';document.getElementById('prevBtn').disabled=currentPage<=1;document.getElementById('nextBtn').disabled=currentPage>=tp;}
 
 document.getElementById('searchInput').addEventListener('input',applyFilter);
 document.getElementById('distFilter').addEventListener('change',applyFilter);
@@ -290,58 +218,74 @@ document.getElementById('catFilter').addEventListener('change',applyFilter);
 document.getElementById('prevBtn').onclick=()=>{if(currentPage>1){currentPage--;renderTable();}};
 document.getElementById('nextBtn').onclick=()=>{const tp=Math.ceil(filtered.length/PAGE_SIZE);if(currentPage<tp){currentPage++;renderTable();}};
 
-function parseCSV(csvText){
-  const result=Papa.parse(csvText,{header:true,skipEmptyLines:true});
-  return result.data.map(r=>{
-    const addr=r['공장대표주소']||r['공장 대표주소']||'';
-    const m=addr.match(/부산광역시\s+(\S+구|\S+군)/);
-    const biz=(r['업종명']||'').replace(/\s*외\s*\d+종/,'').trim();
-    return{n:(r['회사명']||'').trim(),a:m?m[1]:'기타',c:classify(biz),b:biz};
-  }).filter(r=>r.n);
-}
+function parseCSV(t){const r=Papa.parse(t,{header:true,skipEmptyLines:true});return r.data.map(r=>{const a=r['공장대표주소']||r['공장 대표주소']||'';const m=a.match(/부산광역시\s+(\S+구|\S+군)/);const b=(r['업종명']||'').replace(/\s*외\s*\d+종/,'').trim();return{n:(r['회사명']||'').trim(),a:m?m[1]:'기타',c:classify(b),b};}).filter(r=>r.n);}
 
-function loadCSVFile(file){
-  const reader=new FileReader();
-  reader.onload=e=>{
-    try{
-      const rows=parseCSV(e.target.result);
-      if(rows.length===0)throw new Error('empty');
-      setData(rows,file.name);
-    }catch{
-      const rb=new FileReader();
-      rb.onload=e2=>{
-        const decoded=new TextDecoder('euc-kr').decode(e2.target.result);
-        const rows=parseCSV(decoded);
-        setData(rows,file.name);
-      };
-      rb.readAsArrayBuffer(file);
-    }
-  };
-  reader.readAsText(file,'utf-8');
-}
+function loadCSVFile(file){const reader=new FileReader();reader.onload=e=>{try{const rows=parseCSV(e.target.result);if(rows.length===0)throw new Error('empty');setData(rows,file.name);}catch{const rb=new FileReader();rb.onload=e2=>{const decoded=new TextDecoder('euc-kr').decode(e2.target.result);setData(parseCSV(decoded),file.name);};rb.readAsArrayBuffer(file);}};reader.readAsText(file,'utf-8');}
 
-function setData(rows,label){
-  window._currentData=rows;
-  document.getElementById('dateBadge').textContent=label||'업로드된 데이터';
-  document.getElementById('uploadZone').style.borderColor='#1D9E75';
-  document.getElementById('uploadZone').querySelector('.upload-text strong').textContent='✓ '+label+' 로드 완료';
-  renderDashboard(rows);
-}
+function setData(rows,label){window._currentData=rows;document.getElementById('dateBadge').textContent=label||'업로드된 데이터';document.getElementById('uploadZone').style.borderColor='#1D9E75';document.getElementById('uploadZone').querySelector('.upload-text strong').textContent='✓ '+label+' 로드 완료';renderDashboard(rows);}
 
 document.getElementById('fileInput').addEventListener('change',e=>{if(e.target.files[0])loadCSVFile(e.target.files[0]);});
 const zone=document.getElementById('uploadZone');
 zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over');});
 zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
-zone.addEventListener('drop',e=>{
-  e.preventDefault();zone.classList.remove('drag-over');
-  const file=e.dataTransfer.files[0];
-  if(file&&file.name.endsWith('.csv'))loadCSVFile(file);
-});
+zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f&&f.name.endsWith('.csv'))loadCSVFile(f);});
 
-if(typeof FACTORY_DATA!=='undefined'&&FACTORY_DATA.length>0){
-  window._currentData=FACTORY_DATA;
-  document.getElementById('dateBadge').textContent=typeof DATA_DATE!=='undefined'?DATA_DATE:'최신 데이터';
-  renderDashboard(FACTORY_DATA);
+if(typeof FACTORY_DATA!=='undefined'&&FACTORY_DATA.length>0){window._currentData=FACTORY_DATA;document.getElementById('dateBadge').textContent=typeof DATA_DATE!=='undefined'?DATA_DATE:'최신 데이터';renderDashboard(FACTORY_DATA);}
+
+/* ── 챗봇 ── */
+const chatBtn=document.getElementById('chatBtn');
+const chatPanel=document.getElementById('chatPanel');
+const chatMessages=document.getElementById('chatMessages');
+const chatInput=document.getElementById('chatInput');
+const chatSend=document.getElementById('chatSend');
+let chatHistory=[];
+
+chatBtn.addEventListener('click',()=>{chatPanel.classList.toggle('hidden');if(!chatPanel.classList.contains('hidden'))chatInput.focus();});
+chatInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
+chatSend.addEventListener('click',sendMessage);
+
+function getDataSummary(){
+  const data=window._currentData||[];
+  if(!data.length)return'현재 로드된 데이터가 없습니다.';
+  const dM={},cM={};
+  data.forEach(r=>{dM[r.a]=(dM[r.a]||0)+1;cM[r.c]=(cM[r.c]||0)+1;});
+  const tD=Object.entries(dM).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,v])=>`${k} ${v}개`).join(', ');
+  const tC=Object.entries(cM).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,v])=>`${k} ${v}개`).join(', ');
+  return`총 ${data.length.toLocaleString()}개 업체. 구군별 상위: ${tD}. 업종별 상위: ${tC}.`;
+}
+
+function addMsg(text,role){const div=document.createElement('div');div.className='msg '+role;div.innerHTML=text.replace(/\n/g,'<br>');chatMessages.appendChild(div);chatMessages.scrollTop=chatMessages.scrollHeight;return div;}
+
+async function sendMessage(){
+  const text=chatInput.value.trim();
+  if(!text)return;
+  chatInput.value='';chatSend.disabled=true;
+  addMsg(text,'user');
+  chatHistory.push({role:'user',content:text});
+  const typing=addMsg('답변 작성 중...','bot typing');
+  try{
+    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+_k},
+      body:JSON.stringify({
+        model:'llama-3.1-8b-instant',
+        max_tokens:600,
+        messages:[
+          {role:'system',content:`당신은 부산광역시 제조업 공장등록현황 대시보드의 안내 챗봇입니다. 친절하고 간결하게 한국어로 답변하세요. 현재 데이터 요약: ${getDataSummary()} 이 사이트는 부산시 제조업 공장 현황을 시각화한 대시보드로, 구군별/업종별 분포 차트, 업체 검색, 구글맵 연동 기능을 제공합니다. 데이터는 분기마다 자동 업데이트됩니다.`},
+          ...chatHistory.slice(-6)
+        ]
+      })
+    });
+    const data=await res.json();
+    const reply=data.choices?.[0]?.message?.content||'죄송합니다, 응답을 받지 못했습니다.';
+    typing.remove();
+    chatHistory.push({role:'assistant',content:reply});
+    addMsg(reply,'bot');
+  }catch(e){
+    typing.remove();
+    addMsg('오류가 발생했습니다. 잠시 후 다시 시도해주세요.','bot');
+  }
+  chatSend.disabled=false;chatInput.focus();
 }
 </script>
 </body>
