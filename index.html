@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>부산광역시 제조업 공장등록현황 대시보드</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="data.js"></script>
+<style>
+:root {
+  --bg:#f8f7f4;--card:#ffffff;--text:#1a1a18;--text2:#6b6b68;
+  --text3:#999;--border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.06);
+  --hover:#f3f2ef;--radius:10px;--radius-sm:6px;--accent:#185FA5;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#111110;--card:#1c1c1b;--text:#e8e7e3;--text2:#a0a09d;
+  --text3:#666;--border:rgba(255,255,255,0.12);--border2:rgba(255,255,255,0.07);
+  --hover:#252524;--accent:#5ba3e8;}
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;}
+.container{max-width:1200px;margin:0 auto;padding:28px 24px;}
+.page-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap;}
+.page-header h1{font-size:22px;font-weight:600;color:var(--text);flex:1;}
+.badge{font-size:11px;padding:3px 12px;border-radius:20px;
+  background:var(--card);border:0.5px solid var(--border);color:var(--text2);white-space:nowrap;}
+.upload-zone{border:1.5px dashed var(--border);border-radius:var(--radius);
+  padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;
+  transition:border-color 0.2s,background 0.2s;margin-bottom:24px;background:var(--card);}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:var(--hover);}
+.upload-icon{font-size:24px;flex-shrink:0;}
+.upload-text{flex:1;}
+.upload-text strong{display:block;font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;}
+.upload-text span{font-size:12px;color:var(--text2);}
+.upload-btn{padding:7px 16px;border:0.5px solid var(--accent);border-radius:var(--radius-sm);
+  background:transparent;color:var(--accent);font-size:12px;cursor:pointer;
+  white-space:nowrap;font-family:inherit;transition:background 0.15s;}
+.upload-btn:hover{background:var(--hover);}
+#fileInput{display:none;}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+@media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr);}}
+.metric{background:var(--card);border:0.5px solid var(--border2);border-radius:var(--radius);padding:16px 18px;}
+.metric .label{font-size:12px;color:var(--text2);margin-bottom:6px;}
+.metric .value{font-size:24px;font-weight:600;color:var(--text);}
+.metric .sub{font-size:11px;color:var(--text3);margin-top:4px;}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+@media(max-width:700px){.charts-row{grid-template-columns:1fr;}}
+.card{background:var(--card);border:0.5px solid var(--border2);border-radius:var(--radius);padding:18px 20px;}
+.card-title{font-size:12px;font-weight:500;color:var(--text2);
+  text-transform:uppercase;letter-spacing:0.06em;margin-bottom:14px;}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);}
+.legend-sq{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+.search-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.search-row input,.search-row select{
+  height:38px;border:0.5px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--card);color:var(--text);padding:0 12px;font-size:13px;
+  outline:none;transition:border-color 0.15s;font-family:inherit;}
+.search-row input{flex:1;min-width:180px;}
+.search-row input:focus,.search-row select:focus{border-color:var(--accent);}
+.result-info{font-size:12px;color:var(--text2);margin-bottom:10px;}
+.table-wrap{border:0.5px solid var(--border);border-radius:var(--radius-sm);
+  overflow:hidden;max-height:400px;overflow-y:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;}
+thead th{position:sticky;top:0;background:var(--hover);padding:10px 14px;
+  text-align:left;font-weight:500;color:var(--text2);font-size:12px;
+  border-bottom:0.5px solid var(--border);white-space:nowrap;}
+tbody tr{border-bottom:0.5px solid var(--border2);}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--hover);}
+td{padding:9px 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cat-badge{font-size:11px;padding:2px 9px;border-radius:12px;
+  display:inline-block;font-weight:500;white-space:nowrap;}
+.page-row{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;color:var(--text2);}
+.page-row button{padding:6px 14px;border:0.5px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--card);color:var(--text);cursor:pointer;font-size:12px;
+  font-family:inherit;transition:background 0.15s;}
+.page-row button:hover:not(:disabled){background:var(--hover);}
+.page-row button:disabled{opacity:0.35;cursor:default;}
+.update-note{font-size:12px;color:var(--text3);margin-top:24px;text-align:center;}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="page-header">
+    <h1>부산광역시 제조업 공장등록현황</h1>
+    <span class="badge" id="dateBadge">불러오는 중...</span>
+  </div>
+
+  <div class="upload-zone" id="uploadZone">
+    <div class="upload-icon">📂</div>
+    <div class="upload-text">
+      <strong>수동으로 최신 CSV 업데이트하기</strong>
+      <span>분기별 CSV 파일을 여기에 끌어다 놓거나 버튼을 클릭 (자동 업데이트와 별개로 사용 가능)</span>
+    </div>
+    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">파일 선택</button>
+    <input type="file" id="fileInput" accept=".csv" />
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><div class="label">총 등록 업체</div><div class="value" id="mTotal">-</div><div class="sub">개 공장</div></div>
+    <div class="metric"><div class="label">최다 밀집 구</div><div class="value" id="mTopDist">-</div><div class="sub" id="mTopDistSub"></div></div>
+    <div class="metric"><div class="label">최대 업종군</div><div class="value" id="mTopCat">-</div><div class="sub" id="mTopCatSub"></div></div>
+    <div class="metric"><div class="label">구·군 수</div><div class="value" id="mDistCount">-</div><div class="sub">개 행정구역</div></div>
+  </div>
+
+  <div class="charts-row">
+    <div class="card">
+      <div class="card-title">구·군별 공장 수</div>
+      <div class="legend" id="distLegend"></div>
+      <div style="position:relative;height:240px;"><canvas id="distChart" role="img" aria-label="구군별 공장 수"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">업종 대분류 분포</div>
+      <div class="legend" id="catLegend"></div>
+      <div style="position:relative;height:240px;"><canvas id="catChart" role="img" aria-label="업종 대분류 분포"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-title">주요 업종 TOP 15</div>
+    <div style="position:relative;" id="top15wrap"><canvas id="top15Chart" role="img" aria-label="상위 15개 업종"></canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">업체 검색 및 목록</div>
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="업체명 또는 업종 검색..." />
+      <select id="distFilter"><option value="">전체 구·군</option></select>
+      <select id="catFilter"><option value="">전체 업종군</option></select>
+    </div>
+    <div class="result-info" id="resultCount"></div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:28%">업체명</th>
+            <th style="width:15%">구·군</th>
+            <th style="width:18%">업종 대분류</th>
+            <th style="width:39%">업종명</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div class="page-row">
+      <button id="prevBtn">◀ 이전</button>
+      <span id="pageInfo"></span>
+      <button id="nextBtn">다음 ▶</button>
+    </div>
+  </div>
+
+  <p class="update-note">데이터 출처: 부산광역시 공공데이터 · 분기별 자동 업데이트 (매년 1·4·7·10월)</p>
+</div>
+
+<script>
+const CAT_COLORS={'금속·철강가공':'#378ADD','기계·장비':'#1D9E75','전기·전자':'#7F77DD','조선·선박':'#0F6E56','자동차부품':'#D85A30','플라스틱·고무':'#BA7517','식품·수산':'#D4537E','섬유·의류':'#639922','화학·도료':'#E24B4A','가구·목재':'#888780','인쇄·출판':'#5F5E5A','의료·의약':'#185FA5','기타':'#B4B2A9'};
+const CAT_BG={'금속·철강가공':'#dbeeff','기계·장비':'#d8f5ec','전기·전자':'#eeedfe','조선·선박':'#d0ede5','자동차부품':'#faecea','플라스틱·고무':'#faefda','식품·수산':'#fbe8f0','섬유·의류':'#eaf3de','화학·도료':'#fce8e8','가구·목재':'#f1efe8','인쇄·출판':'#eeece8','의료·의약':'#e6f1fb','기타':'#f1efe8'};
+const DIST_COLORS=['#378ADD','#1D9E75','#7F77DD','#D85A30','#BA7517','#D4537E','#639922','#E24B4A','#0F6E56','#888780','#5F5E5A','#185FA5','#3C3489','#0C447C','#993556','#3B6D11'];
+
+function classify(n){
+  if(/선박|조선/.test(n))return'조선·선박';
+  if(/자동차|차량/.test(n))return'자동차부품';
+  if(/금속|철강|절삭|도금|볼트|강관|금형|주형|구조용 금속|육상 금속/.test(n))return'금속·철강가공';
+  if(/기계|유압|펌프|밸브|탭/.test(n))return'기계·장비';
+  if(/전기|배전|전자|반도체|통신/.test(n))return'전기·전자';
+  if(/플라스틱|고무/.test(n))return'플라스틱·고무';
+  if(/식품|음식|빵|수산|농산|음료|주류/.test(n))return'식품·수산';
+  if(/섬유|의류|봉제|직물|편조|어망/.test(n))return'섬유·의류';
+  if(/화학|도료|세제|치약|비누|페인트/.test(n))return'화학·도료';
+  if(/가구|목재/.test(n))return'가구·목재';
+  if(/인쇄|출판/.test(n))return'인쇄·출판';
+  if(/의료|의약/.test(n))return'의료·의약';
+  return'기타';
+}
+
+const isDark=matchMedia('(prefers-color-scheme:dark)').matches;
+const textCol=isDark?'#999':'#777';
+const gridCol=isDark?'rgba(255,255,255,0.07)':'rgba(0,0,0,0.06)';
+let chartDist=null,chartCat=null,chartTop15=null;
+let filtered=[],currentPage=1;
+const PAGE_SIZE=20;
+
+function buildLegend(id,items){
+  document.getElementById(id).innerHTML=items.map(([l,c])=>
+    `<span class="legend-item"><span class="legend-sq" style="background:${c}"></span>${l}</span>`).join('');
+}
+
+function renderDashboard(data){
+  const distMap={},catMap={},bizMap={};
+  data.forEach(r=>{
+    distMap[r.a]=(distMap[r.a]||0)+1;
+    catMap[r.c]=(catMap[r.c]||0)+1;
+    bizMap[r.b]=(bizMap[r.b]||0)+1;
+  });
+  const sortedDist=Object.entries(distMap).sort((a,b)=>b[1]-a[1]);
+  const sortedCat=Object.entries(catMap).sort((a,b)=>b[1]-a[1]);
+  const top15=Object.entries(bizMap).sort((a,b)=>b[1]-a[1]).slice(0,15);
+
+  document.getElementById('mTotal').textContent=data.length.toLocaleString();
+  document.getElementById('mTopDist').textContent=sortedDist[0][0];
+  document.getElementById('mTopDistSub').textContent=sortedDist[0][1].toLocaleString()+'개 ('+Math.round(sortedDist[0][1]/data.length*100)+'%)';
+  document.getElementById('mTopCat').textContent=sortedCat[0][0];
+  document.getElementById('mTopCatSub').textContent=sortedCat[0][1].toLocaleString()+'개 ('+Math.round(sortedCat[0][1]/data.length*100)+'%)';
+  document.getElementById('mDistCount').textContent=sortedDist.length;
+
+  buildLegend('distLegend',sortedDist.slice(0,5).map(([l],i)=>[l,DIST_COLORS[i]]));
+  buildLegend('catLegend',sortedCat.slice(0,5).map(([l])=>[l,CAT_COLORS[l]||'#888']));
+
+  if(chartDist)chartDist.destroy();
+  chartDist=new Chart(document.getElementById('distChart'),{
+    type:'bar',
+    data:{labels:sortedDist.map(d=>d[0]),datasets:[{data:sortedDist.map(d=>d[1]),backgroundColor:sortedDist.map((_,i)=>DIST_COLORS[i%DIST_COLORS.length]),borderRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw.toLocaleString()+'개'}}},
+      scales:{x:{grid:{color:gridCol},ticks:{color:textCol,font:{size:11},callback:v=>v.toLocaleString()}},y:{grid:{display:false},ticks:{color:textCol,font:{size:11}}}}}
+  });
+
+  if(chartCat)chartCat.destroy();
+  chartCat=new Chart(document.getElementById('catChart'),{
+    type:'doughnut',
+    data:{labels:sortedCat.map(d=>d[0]),datasets:[{data:sortedCat.map(d=>d[1]),backgroundColor:sortedCat.map(d=>CAT_COLORS[d[0]]||'#888'),borderColor:isDark?'#1c1c1b':'#fff',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.label+': '+c.raw.toLocaleString()+'개 ('+Math.round(c.raw/data.length*100)+'%)'}}}}
+  });
+
+  document.getElementById('top15wrap').style.height=(top15.length*34+60)+'px';
+  if(chartTop15)chartTop15.destroy();
+  chartTop15=new Chart(document.getElementById('top15Chart'),{
+    type:'bar',
+    data:{labels:top15.map(([l])=>l.length>24?l.slice(0,24)+'…':l),datasets:[{data:top15.map(d=>d[1]),backgroundColor:top15.map(([l])=>CAT_COLORS[classify(l)]||'#888'),borderRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw.toLocaleString()+'개',title:i=>top15[i[0].dataIndex][0]}}},
+      scales:{x:{grid:{color:gridCol},ticks:{color:textCol,font:{size:11},callback:v=>v.toLocaleString()}},y:{grid:{display:false},ticks:{color:textCol,font:{size:11}}}}}
+  });
+
+  const distSel=document.getElementById('distFilter');
+  const catSel=document.getElementById('catFilter');
+  distSel.innerHTML='<option value="">전체 구·군</option>';
+  catSel.innerHTML='<option value="">전체 업종군</option>';
+  sortedDist.forEach(([d])=>{const o=document.createElement('option');o.value=d;o.textContent=d;distSel.appendChild(o);});
+  sortedCat.forEach(([c])=>{const o=document.createElement('option');o.value=c;o.textContent=c;catSel.appendChild(o);});
+
+  document.getElementById('searchInput').value='';
+  applyFilter();
+}
+
+function applyFilter(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const dist=document.getElementById('distFilter').value;
+  const cat=document.getElementById('catFilter').value;
+  filtered=(window._currentData||[]).filter(r=>
+    (!q||r.n.toLowerCase().includes(q)||r.b.toLowerCase().includes(q))&&
+    (!dist||r.a===dist)&&(!cat||r.c===cat));
+  currentPage=1;renderTable();
+}
+
+function renderTable(){
+  const total=filtered.length;
+  const rows=filtered.slice((currentPage-1)*PAGE_SIZE,currentPage*PAGE_SIZE);
+  document.getElementById('resultCount').textContent='총 '+total.toLocaleString()+'건';
+  document.getElementById('tableBody').innerHTML=rows.map(r=>{
+    const bg=CAT_BG[r.c]||'#f1efe8',fg=CAT_COLORS[r.c]||'#888';
+    return`<tr><td title="${r.n}">${r.n}</td><td>${r.a}</td><td><span class="cat-badge" style="background:${bg};color:${fg};">${r.c}</span></td><td title="${r.b}">${r.b}</td></tr>`;
+  }).join('')||'<tr><td colspan="4" style="text-align:center;color:#999;padding:24px;">검색 결과 없음</td></tr>';
+  const tp=Math.ceil(total/PAGE_SIZE)||1;
+  document.getElementById('pageInfo').textContent=currentPage+' / '+tp+' 페이지';
+  document.getElementById('prevBtn').disabled=currentPage<=1;
+  document.getElementById('nextBtn').disabled=currentPage>=tp;
+}
+
+document.getElementById('searchInput').addEventListener('input',applyFilter);
+document.getElementById('distFilter').addEventListener('change',applyFilter);
+document.getElementById('catFilter').addEventListener('change',applyFilter);
+document.getElementById('prevBtn').onclick=()=>{if(currentPage>1){currentPage--;renderTable();}};
+document.getElementById('nextBtn').onclick=()=>{const tp=Math.ceil(filtered.length/PAGE_SIZE);if(currentPage<tp){currentPage++;renderTable();}};
+
+function parseCSV(csvText){
+  const result=Papa.parse(csvText,{header:true,skipEmptyLines:true});
+  return result.data.map(r=>{
+    const addr=r['공장대표주소']||r['공장 대표주소']||'';
+    const m=addr.match(/부산광역시\s+(\S+구|\S+군)/);
+    const biz=(r['업종명']||'').replace(/\s*외\s*\d+종/,'').trim();
+    return{n:(r['회사명']||'').trim(),a:m?m[1]:'기타',c:classify(biz),b:biz};
+  }).filter(r=>r.n);
+}
+
+function loadCSVFile(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const rows=parseCSV(e.target.result);
+      if(rows.length===0)throw new Error('empty');
+      setData(rows,file.name);
+    }catch{
+      const rb=new FileReader();
+      rb.onload=e2=>{
+        const decoded=new TextDecoder('euc-kr').decode(e2.target.result);
+        const rows=parseCSV(decoded);
+        setData(rows,file.name);
+      };
+      rb.readAsArrayBuffer(file);
+    }
+  };
+  reader.readAsText(file,'utf-8');
+}
+
+function setData(rows,label){
+  window._currentData=rows;
+  document.getElementById('dateBadge').textContent=label||'업로드된 데이터';
+  document.getElementById('uploadZone').style.borderColor='#1D9E75';
+  document.getElementById('uploadZone').querySelector('.upload-text strong').textContent='✓ '+label+' 로드 완료';
+  renderDashboard(rows);
+}
+
+document.getElementById('fileInput').addEventListener('change',e=>{if(e.target.files[0])loadCSVFile(e.target.files[0]);});
+const zone=document.getElementById('uploadZone');
+zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over');});
+zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
+zone.addEventListener('drop',e=>{
+  e.preventDefault();zone.classList.remove('drag-over');
+  const file=e.dataTransfer.files[0];
+  if(file&&file.name.endsWith('.csv'))loadCSVFile(file);
+});
+
+// data.js 에서 자동 로드
+if(typeof FACTORY_DATA!=='undefined'&&FACTORY_DATA.length>0){
+  window._currentData=FACTORY_DATA;
+  document.getElementById('dateBadge').textContent=typeof DATA_DATE!=='undefined'?DATA_DATE:'최신 데이터';
+  renderDashboard(FACTORY_DATA);
+}
+</script>
+</body>
+</html>
